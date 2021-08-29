@@ -1,0 +1,391 @@
+<!DOCTYPE html><html><title>Erkenntnisse_deluxe_Template_Example_Bash-Dash</title><head><meta charset="UTF-8"><style type="text/css">
+    html, body{font-family:monospace; white-space:pre-wrap; margin: 0 !important; padding: 5px !important; overflow:auto;}
+    canvas{position:absolute; top:160px; left:0px; right:0px; border:2px solid; display: none;}
+    #Canspan{background-color: grey;}
+    h3{color:blue;  background-color: orange;}
+    table{border:3px solid darkblue;border-collapse: collapse; text-align:right; empty-cells:show; /*Damit auch der Rand um leere Zellen da ist, wird aber mit &#160; sowieso unterbunden */}
+    td, th{border:2px solid orange;padding: 10px;text-align:center;}
+    img{border:3px solid #000000;}
+    audio{background-color: firebrick; border:5px solid;}
+    p{overflow: scroll; direction: rtl; height: 250px;}
+    p::-webkit-scrollbar {width: 2em; background-color: #286ef1;} 
+    p::-webkit-scrollbar-thumb {background-color: #89f767;}
+    p::-webkit-scrollbar-button {background-color: #bbbbbb; display: block; border-style: solid; height: 20px;}
+    *.top{font-weight:bold;vertical-align:bottom;}
+    *.Konsole{background-color: #89e5dc;}
+    *.Frage{border-left: 4px solid green;}
+    .tiefergestellt{vertical-align: -30px;}
+    .linkerRand{border-left:4px solid black;padding-left:20px;}
+    .Bashskripte{white-space:pre;background-color: #270033;color: antiquewhite;margin-top: 5px; display: block; direction: ltr;}
+    .spanleft{display: block; direction: ltr;}
+    span.userlight{background: #ebd57d;}
+    span.rootlight{background: #f44242;}
+    .fixedforeground{position: fixed; z-index: +1;} 
+    #uberschrift, caption{font-weight:bold;font-size:1.8em;text-align:center;}
+    </style>
+<script type="text/javascript">
+//      PARKINgLot_Code:
+// function erase() { var m = confirm("Want to clear"); if (m) {ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);}} HTML: <input type="button" value="clear" id="clr" size="23" onclick="erase()">
+var canvas, ctx, flag, prevX, currX, prevY, currY, color;
+function colorf(obj) {
+    switch (obj.id) {
+        case "green": color = "green"; break;
+        case "blue":  color = "blue";  break;
+        case "red":   color = "red";   break;
+        case "yellow":color = "yellow";break;
+        case "orange":color = "orange";break;
+        case "black": color = "black"; break;
+        case "white": color = "white"; break;
+        }
+}
+function findxy(res, e) {
+    if (res == 'down') {
+        prevX = currX;
+        prevY = currY;
+        currX = e.pageX - canvas.offsetLeft;
+        currY = e.pageY - canvas.offsetTop;
+        flag = true;
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.fillRect(currX, currY, 2, 2);
+        ctx.closePath();
+    }
+    if (res == 'up' || res == "out") {
+        flag = false;
+    }
+    if (res == 'move') {
+        if (flag) {
+            prevX = currX;
+            prevY = currY;
+            currX = e.pageX - canvas.offsetLeft;
+            currY = e.pageY - canvas.offsetTop;
+            draw();
+        }
+    }
+}
+function draw() {
+    ctx.beginPath();
+    ctx.moveTo(prevX, prevY);
+    ctx.lineTo(currX, currY);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = document.getElementById("linesize").value;
+    ctx.stroke();
+    ctx.closePath();
+}
+function download() {   
+    localStorage.setItem('imgCanvas', canvas.toDataURL()); // base64 string from the canvas context
+
+//    var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+//    document.getElementById("download").setAttribute("href", image);
+}
+function load_png() {
+    let storItem = localStorage.getItem("imgCanvas");
+    let img = new Image();
+    img.src = storItem;
+    if(storItem){
+        ctx.drawImage(img,0,0,canvas.width,canvas.height); // draw the base64 encoded image on the canvas
+    }
+    // let image=new Image();
+    // image.onload=function(){
+    // ctx.drawImage(image,0,0,canvas.width,canvas.height);
+    // }; image.src="canvas_erkenntnisse.png";
+}
+document.addEventListener('keypress', function(e){
+    let keyins = ["f","d","s","a","r","e","w","q"]; // if( e.code != "KeyF" && e.code != "KeyD" && e.code != "KeyS" && e.code != "KeyA" && e.code != "KeyR" && e.code != "KeyE" && e.code != "KeyW" && e.code != "KeyQ") return false;
+    if  (keyins.indexOf(e.key) == -1) console.log( e.key + " nicht im let keyins[Array]" );
+    else{ 
+        switch (e.key){                                            
+            case "f": canvas.style.display = "none"; document.getElementById("Canspan").style.background = "gray"; break;  // .style.display = "none" -> everything disappears   
+            case "d": canvas.style.display = "inline"; document.getElementById("Canspan").style.background = "white"; break;
+            case "s": document.querySelectorAll('[class*="Frage"]'  ).forEach(function(o){o.style.visibility = "hidden"}); document.getElementById("Fragspan").style.background = "gray"; break;
+            case "a": document.querySelectorAll('[class*="Frage"]'  ).forEach(function(o){o.style.visibility = "visible"}); document.getElementById("Fragspan").style.background = "white"; break;
+            case "r": document.querySelectorAll('[class*="nitokn"]' ).forEach(function(o){o.style.visibility = "hidden"}); document.getElementById("nitospan").style.background = "gray"; break;
+            case "e": document.querySelectorAll('[class*="nitokn"]' ).forEach(function(o){o.style.visibility = "visible"}); document.getElementById("nitospan").style.background = "white"; break;
+            case "w": document.querySelectorAll('[class*="Konsole"]').forEach(function(o){o.style.visibility = "hidden"}); document.getElementById("Konsspan").style.background = "gray"; break;
+            case "q": document.querySelectorAll('[class*="Konsole"]').forEach(function(o){o.style.visibility = "visible"}); document.getElementById("Konsspan").style.background = "white"; break;
+        }
+    }  
+});
+document.addEventListener('DOMContentLoaded', function(){
+    let innerhtml_add;
+    innerhtml_add = document.body.innerHTML.replace(/(https?:\/\/[^\s]+)/g,"<a href='$1' target='_blank' >$1</a>");
+    // fixen: Regexes zum matchen der user + Ende Promt
+    innerhtml_add = innerhtml_add.replace(/user@pc /g, "<span class='userlight'>user@pc   </span>");
+    innerhtml_add = innerhtml_add.replace(/root@pc /g, "<span class='rootlight'>root@pc   </span>");
+    document.body.innerHTML = innerhtml_add;
+
+    let anker_destinations = document.getElementsByTagName("h3");
+        Array.from(anker_destinations).forEach((desti , index) => {
+            desti.setAttribute("id", index + 1);
+        });
+//  [START_FOR_CANVAS_LAYER]
+    canvas = document.getElementsByTagName("canvas")[0]; 
+    flag = false; 
+    prevX, currX, prevY, currY = 0;
+    color = "black"; 
+    ctx = canvas.getContext("2d");
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight;
+    ctx.canvas.clientWidth = document.body.clientWidth;
+    ctx.canvas.clientHeight = document.clientHeight;
+    ctx.globalAlpha = 0.4;
+    ctx.globalCompositeOperation = 'lighter';
+    canvas.addEventListener("mousemove", function (e) { findxy('move', e) }, false);
+    canvas.addEventListener("mousedown", function (e) { findxy('down', e) }, false);
+    canvas.addEventListener("mouseup",   function (e) { findxy('up',   e) }, false);
+    canvas.addEventListener("mouseout",  function (e) { findxy('out',  e) }, false);
+//  [END_FOR_CANVAS_LAYER]
+});
+</script>
+<!-- <audio controls><source src="test.ogg" type="audio/ogg"></audio> -->
+<!-- <video controls height="180" width="320"><source src="Umgebungsvariablen.mp4" type="video/mp4"></video> -->
+</head><body>
+<div class="fixedforeground"><span style="background:red;" id="red" onclick="colorf(this)">    </span><span style="background:blue;" id="blue" onclick="colorf(this)">    </span><span style="background:yellow;" id="yellow" onclick="colorf(this)">    </span><span style="background:orange;" id="orange" onclick="colorf(this)">    </span><span style="background:black;" id="black" onclick="colorf(this)">    </span><span ></span><span style="background:white;border:2px solid;" id="white" onclick="colorf(this)">    </span><input type="number" value="2" id="linesize" size="2" min="0" max="10"><input type="button" value="load" id="btn" size="30" onclick="load_png()"><a id="download" download="canvas_erkenntnisse.png"><button type="button" onclick="download()">download</button></a> <span id="Canspan">Canvas f/d</span> <span id="Fragspan">Fragen s/a</span> <span id="nitospan">nitokn r/e</span> <span id="Konsspan">Konsole w/q</span></div>
+<canvas></canvas>
+<a href="#1">  1. Beispiel</a>
+<a href="#2">  2. bash -x / export , env, declare -x / typeset / set</a>
+<a href="#3">  3. Nice to know</a>
+<a href="#4">  4. BLALBALBA</a>
+<a href="#5">  5. Bashskripte</a>
+<a href="#6">  6. additional Stuff </a>
+<h3>  1. Linux-Zeugsl</h3>
+<div class="Konsole Frage">
+#############################################
+http://swenvoigt.com/linux/2017/08/12/getopt-und-getopts/
+    getopt und getopts
+    user@pc ~ $ type getopt
+    getopt ist /usr/bin/getopt
+    user@pc ~ $ type getopts
+    getopts ist eine von der Shell mitgelieferte Funktion.
+    user@pc ~ $ file /usr/bin/getopt
+    /usr/bin/getopt: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=f7551f123c94ad7cc79fcc0be4f6811d0676a13b, stripped
+    user@pc ~ $ 
+#############################################
+</div>
+<div class="nitokn">
+    $0 = Bezeichnung der Shell im interaktiven Modus
+    $0 = Dateiname des Shellskripts im nicht interaktiven Modus
+    $0 returns the name of the running process.
+</div>
+<div class="nitokn Konsole">
+    <b>man command !Falle!</b> 
+    user@pc #  man $Befehl    // ruft nicht immer die man-Page des Codes auf:
+    user@pc #   $Befehl       // der mit $Befehl aufgerufen wird!
+    den Befehl test oder [   gibt es in mehreren Geschmacksrichtungen:
+    user@pc # type -a test
+    test is a shell builtin
+    test is /usr/bin/test
+    test is /bin/test
+mit "man test" bekommt man aber die manpage von /usr/bin/test
+ausgeführt wird aber das builtin...  Sie unterscheiden sich!
+</div>
+<div class="Frage Konsole">
+    -> Harald Maaßen Seite 288  ISBN_ 9 78-3-8362-3527-3 
+    which = 'type -p'
+    user@pc $ type -t which
+    file
+    user@pc $ type -t type
+    builtin
+       ->  Gibt es überhaupt eine Shell ohne diesen zentralen Befehl.
+       ->  Wenn nicht, würde es ein alias which='type -p' eigentlich auch tun.
+</div>
+<div class="Frage Konsole">
+https://www.howtogeek.com/423214/how-to-use-the-rename-command-on-linux/
+https://www.cyberciti.biz/tips/renaming-multiple-files-at-a-shell-prompt.html
+user@pc # whatis rename
+rename.ul (1)        - rename files
+rename (2)           - change the name or location of a file
+user@pc # whereis rename
+rename: /usr/bin/rename.ul /usr/share/man/man2/rename.2.gz
+</div>
+<span class="Konsole">
+find / -perm -u+s # Dateien mit gesetztem SUID-Bit
+find / -perm -g+s # Dateien mit gesetztem SGID-BIT
+</span><span class="Konsole">
+echo $(($(date +'%s')/86400)) #  Tage seit »1970-01-01 00:00:00 UTC«
+</span>
+<span class="Frage">Orginal: vom Arexx-Forum   SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="3211", MODE:="0666"    
+</span>
+<div class="Frage Konsole">
+    -rwxr-xr-x 1 root root 1183448 Jun 18 17:44 bash*
+    -rwxr-xr-x 1 root root  129816 Jul 18  2019 dash*
+    lrwxrwxrwx 1 root root       4 Jun 18 17:44 rbash -> bash*
+    lrwxrwxrwx 1 root root       4 Jun 30 11:32 sh -> dash*
+
+    Wieso ist die Bash eigentlich nicht POSIX - Konform und bei was?
+    https://www.gnu.org/software/bash/manual/html_node/Bash-POSIX-Mode.html
+    https://askubuntu.com/questions/766270/what-is-posix-compatible-mode-in-linux
+    https://wiki.ubuntuusers.de/Dash/
+</div>
+<h3>  2. bash -x / export , env, declare -x / typeset / set</h3><span class="Frage">export (bashbuildin) und env (coreutils-> /usr/bin/env) , geben ohne Parameter auf jeweils unterschiedliche Weisen Umgebungsvariablen aus.
+mit declare -x (bashbuildin) kann man ebenfalls Umgebungsvariablen setzen.
+    typeset synonym für declare   beim Vergleich mit diff kommt aber ein Unterschied zustande den man mit  declare und set hat.
+set liefert ohne Parameter exakt die selbe Ausgabe wie declare und typeset
+</span>
+<span class="Frage">"bash -x namescript.sh" ---> :eyes:  Variablenersetzung **vor** ausführen der Befehle.
+#!/bin/bash -x works
+-e Exit immediately if a command exits with a non-zero status.
+<i>Rollbacks(Prinzp : SQL-DBs) in Basch möglich ? -> nur -> Snapshoots auf Dateisystembasis ?</i>
+interaktiven Shell kann man mit set diese Optionen zur Laufzeit ändern
+wird in ShellBüchern leider häufig nur zum Parameter neu einlesen erklärt... 
+$1 $2 $3 (wobei dafür Cut genau so taugt oder die Bash-Buildin Variablenersetzung)
+</span>
+<h3>  3. Nice to know</h3>
+<div class="Konsole nitokn">
+locate - list files in databases that match a pattern  /  updatedb is recommended before
+locale - locale - get locale-specific information : LANG=de_DE.UTF-8 ....... 
+</div><div class="Konsole nitokn">
+user@pc faketime "00:30:00" /usr/bin/man
+gimme gimme gimme
+</div><div class="Konsole nitokn"></div>
+-> "shellcheck" (nachinstallieren) -> = sehr empfehlenswert.
+https://www.shellcheck.net
+https://youtu.be/lbMsFXMnqNY
+</div><div class="Konsole nitokn">
+$ sleep 60 &
+[1] 6238
+$ echo "$!"
+6238
+</div><div class="Konsole nitokn">
+user@pc history
+ 1997  ll
+ 1998  echo $!
+ 1999  history
+ user@pc !1997
+ll ->
+-rw-r--r--  file1
+-rw-r--r--  file2
+</div><div class="Konsole nitokn">
+find . -type f -exec rm {} \;  # !! bei großen Mengen an Dateinamen wegen begrenztem Bashpuffer
+find . -type f -exec ls  -l {} \;
+### Besser ist dieses Konstrukt mit xargs: (nur weiss ich nicht mehr wieso das besser sein soll.)
+find /tmp/debian/var -name "_NOPACKAGE*" -print0 | xargs -0 rm -Rf # +1 Dateien werden einzeln gelöscht
+</div><p><span class="spanleft">
+u21@a20:~/Documents$ ll
+total 8
+drwxr-xr-x  2 u21 u21 4096 Jun 30 12:28 ./
+drwxr-xr-x 21 u21 u21 4096 Jul 10 11:03 ../
+u21@a20:~/Documents$ mkdir neuerOrdner1
+u21@a20:~/Documents$ ll
+total 12
+drwxr-xr-x  3 u21 u21 4096 Jul 12 00:09 ./
+drwxr-xr-x 21 u21 u21 4096 Jul 10 11:03 ../
+drwxrwxr-x  2 u21 u21 4096 Jul 12 00:09 neuerOrdner1/
+u21@a20:~/Documents$ mkdir neuerOrdner2
+u21@a20:~/Documents$ ll
+total 16
+drwxr-xr-x  4 u21 u21 4096 Jul 12 00:09 ./
+drwxr-xr-x 21 u21 u21 4096 Jul 10 11:03 ../
+drwxrwxr-x  2 u21 u21 4096 Jul 12 00:09 neuerOrdner1/
+drwxrwxr-x  2 u21 u21 4096 Jul 12 00:09 neuerOrdner2/
+u21@a20:~/Documents$ mkdir neuerOrdner3
+u21@a20:~/Documents$ ll
+total 20
+drwxr-xr-x  5 u21 u21 4096 Jul 12 00:09 ./
+drwxr-xr-x 21 u21 u21 4096 Jul 10 11:03 ../
+drwxrwxr-x  2 u21 u21 4096 Jul 12 00:09 neuerOrdner1/
+drwxrwxr-x  2 u21 u21 4096 Jul 12 00:09 neuerOrdner2/
+drwxrwxr-x  2 u21 u21 4096 Jul 12 00:09 neuerOrdner3/
+u21@a20:~/Documents$ 
+</span></p>
+</div><p><span class="spanleft">
+    user@pc ~/Schreibtisch/git_AskYourself $ git init
+    Leeres Git-Repository in /home/josef/Schreibtisch/git_AskYourself/.git/ initialisiert
+    user@pc ~/Schreibtisch/git_AskYourself $ git status
+    Auf Branch master
+-
+---
+-rw-r--r---
+-rw-r--r---
+-rw-r--r---
+-rw-r--r---
+-rw-r--r--
+
+</span></p>
+<h3>  4. ----</h3>
+<div class="Frage">Der Sinn des Lebens...... </div>
+<h3>  5. Bashskripte</h3><p>
+    <span class="Bashskripte">
+    #!/bin/bash -x
+    # nosecond.sh , wie man doppeltes Starten eines Skriptes verhindert
+    XXX=`pgrep nosecond | wc -l`
+    echo $XXX
+    if   [ $XXX  -lt 3 ]
+    then
+            while true; do
+                    echo `date`
+                    echo wait   # Hier sinnvolle Dinge tun.
+                    sleep 10
+            done
+    else
+    echo "ist_bereits_am_Start_siehe_ps_-ax"
+    fi
+    </span></p> 
+    Race Condition -> hatte nie Probleme s.O...   folgendes Konstrukt soll aber besser sein:
+    <p>
+        <span class="Bashskripte">
+            #!/bin/bash -x
+            # lockfile  procmail packet ..... 
+            LOCKFILE="/tmp/mylockfile.lock"
+            # try once to get the lock else exit
+            lockfile -r 0 "$LOCKFILE" || exit 0
+            
+            # here the actual job
+            
+            rm -f "$LOCKFILE"
+        </span></p>
+        https://riptutorial.com/de/bash/topic/3795/musterubereinstimmung-und-regulare-ausdrucke
+        <p>
+            <span class="Bashskripte">
+        VARIABLENERSETZUNG  
+        josef ~ $ satz=das_ist_ein_Satz
+        josef ~ $ echo ${satz#*_} matched von links und gibt nach erstem Match restlichen rechten Rest aus.
+        ist_ein_Satz
+        josef ~ $ echo ${satz##*_} matched von links und gibt nach letztem Match restlichen rechten Rest = möglichst wenig aus. 
+        Satz
+        josef ~ $ echo ${satz%_*}  matched von rechts der Regex nach %% muss also umgekehrt werden und beginnt sinnvollerweise meist mit * von rechts nach links gelesen
+        das_ist_ein
+        josef ~ $ echo ${satz%%_*}
+        das
+        josef ~ $ 
+        ->>>>>>>>>>zu prüfende Behauptung:
+        in der Bash gibt es keine Quantifizierer für Regex
+        hh123dd
+        josef ~ $ echo ${num/[1-9]*[1-9]/-} 
+        hh-dd
+        josef ~ $ num=hh123dd45ee
+        josef ~ $ echo ${num/[1-9]*[1-9]/-} 
+        hh-ee
+        josef ~ $ echo ${num/[1-9]*[1-9][*][1-9]*[1-9]/-} 
+        hh123dd45ee
+        josef ~ $ echo ${num/[1-9]*[1-9]*[1-9]*[1-9]/-} 
+        hh-ee
+        josef ~ $ echo ${num/[1-9]*[1-9][a-z][1-9]*[1-9]/-} 
+        hh123dd45ee
+        josef ~ $ echo ${num/[1-9]{*}/-} 
+        hh123dd45ee/-}
+        josef ~ $ echo ${num/[1-9]\{*\}/-} 
+        hh123dd45ee
+        josef ~ $ echo ${num/[1-9]\{1-3}/-} 
+        hh123dd45ee/-}
+        josef ~ $ echo ${num/[1-9]{1-3}/-} 
+        hh123dd45ee/-}
+        josef ~ $ echo ${num/[1-9]{1-3\}/-} 
+        hh123dd45ee
+        josef ~ $ echo ${num/[1-9]{1,3\}/-} 
+        hh123dd45ee
+        josef ~ $ echo ${num/[1-9]{1,3}/-} 
+        hh123dd45ee/-}
+        josef ~ $ echo ${num/[1-9]{1,3\}/-} 
+        hh123dd45ee
+        josef ~ $ echo ${num/[1-9]\{1,3\}/-} 
+        hh123dd45ee
+        josef ~ $ echo $num | tr -d 0-9
+        hhddee
+    </span></p>
+<h3> 6. additional Stuff</h3>
+<span class="nitokn">
+nice to know stuff
+</span>
+</body>
+</html>

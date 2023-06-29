@@ -150,6 +150,10 @@ document.addEventListener('DOMContentLoaded', function(){
 <a href="#6">  6. additional Stuff </a>
 <h3>  1. Linux-Zeugsl</h3>
 <div class="Konsole Frage">
+Münzzähler 
+perl -e 'open($in, "<", "/dev/ttyUSB0") || die $!;  
+while(defined(sysread($in, $d, 1))) { print time()." ".ord($d)."\n"; }'
+
 #############################################
 http://swenvoigt.com/linux/2017/08/12/getopt-und-getopts/
     getopt und getopts
